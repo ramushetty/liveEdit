@@ -397,7 +397,8 @@ function startConsumingMessages() {
       // if (message.action === 'noteUpdated') {
     
         // io.emit('noteUpdated', msg.content );
-        io.to(message.noteId).emit('noteUpdated', msg.content);
+        console.log(msg.noteId)
+        io.to(msg.noteId).emit('noteUpdated', msg.content);
     // }
   });
 

@@ -71,17 +71,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
-
+import { useParams, useNavigate } from 'react-router-dom';
+import './NoteEditor.css'
 const socket = io('http://localhost:5000'); // Adjust this to match your server
 
-const NoteEditor = ({ noteId }) => {
+
+const NoteEditor = () => {
+    
+    const { noteId } = useParams();
+    console.log(noteId)
     const [content, setContent] = useState('');
 
     useEffect(() => {
-        socket.emit('joinNote', noteId);
+        socket.emit('joinNote', noteId);        
 
         socket.on('noteUpdated', (updatedContent) => {
-            console.log("in frontend - updated contetn", updatedContent)
+            
             setContent(updatedContent);
         });
 
@@ -102,9 +107,17 @@ const NoteEditor = ({ noteId }) => {
     };
 
     return (
-        <div>
-            <textarea value={content} onChange={e => setContent(e.target.value)} />
-            <button onClick={handleSave}>Save</button>
+        // <div>
+        //     <textarea value={content} onChange={e => setContent(e.target.value)} />
+        //     <button onClick={handleSave}>Save</button>
+        // </div>
+        <div className="note-editor-container">
+            <textarea
+                className="note-editor-textarea"
+                value={content}
+                onChange={e => setContent(e.target.value)}
+            />
+            <button className="note-editor-save-button" onClick={handleSave}>Save</button>
         </div>
     );
 };
