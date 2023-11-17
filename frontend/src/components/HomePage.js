@@ -61,12 +61,15 @@ import axios from 'axios';
 import Note from './Note'; // A component to render each note
 import './HomePage.css'; // CSS for styling
 import { useNavigate } from 'react-router-dom';
+import LoginPage from './LoginPage';
+import Navbar from './Navbar';
 
 function HomePage() {
     const [notes, setNotes] = useState([]);
     const [showNewNoteForm, setShowNewNoteForm] = useState(false);
     const [newNoteName, setNewNoteName] = useState('');
     const navigate = useNavigate();
+    const email = localStorage.getItem('email');
 
     useEffect(() => {
         fetchNotes();
@@ -81,8 +84,6 @@ function HomePage() {
         }
     };
 
-
-
     const handleDelete = async (noteId) => {
         try {
             await axios.delete(`http://localhost:5000/api/notes/${noteId}`);
@@ -91,8 +92,6 @@ function HomePage() {
             console.error('Error deleting note:', error);
         }
     };
-
-
 
     const handleCreateNew = () => {
         setShowNewNoteForm(true);
@@ -115,35 +114,39 @@ function HomePage() {
     };
 
     return (
-        <div className="home-container">
-            <h1>Notes</h1>
-            {/* <button onClick={handleCreateNew} className="create-note-button">Create New Note</button>
-             */}
-
-            <button onClick={handleCreateNew} className="create-note-button">
-                Create New Note
-            </button>
-            {showNewNoteForm && (
-                <form onSubmit={handleNewNoteSubmit} className="new-note-form">
-                    <input
-                        type="text"
-                        value={newNoteName}
-                        onChange={(e) => setNewNoteName(e.target.value)}
-                        placeholder="Enter note name"
-                    />
-                    <button type="submit">Save Note</button>
-                </form>
+        <div>
+            <Navbar />
+            {email ? (
+                <div className="home-container mt-5">
+                    <h1>Notes</h1>
+                    <button onClick={handleCreateNew} className="create-note-button">
+                        Create New Note
+                    </button>
+                    {showNewNoteForm && (
+                        <form onSubmit={handleNewNoteSubmit} className="new-note-form">
+                            <input
+                                type="text"
+                                value={newNoteName}
+                                onChange={(e) => setNewNoteName(e.target.value)}
+                                placeholder="Enter note name"
+                            />
+                            <button type="submit">Save Note</button>
+                        </form>
+                    )}
+                    <div className="notes-list">
+                        {notes.map((note) => (
+                            <Note
+                                key={note.noteId}
+                                note={note}
+                                onEdit={() => handleEdit(note.noteId)}
+                                onDelete={() => handleDelete(note.noteId)}
+                            />
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <LoginPage />
             )}
-            <div className="notes-list">
-                {notes.map((note) => (
-                    <Note 
-                        key={note.noteId} 
-                        note={note} 
-                        onEdit={() => handleEdit(note.noteId)} 
-                        onDelete={() => handleDelete(note.noteId)} 
-                    />
-                ))}
-            </div>
         </div>
     );
 }

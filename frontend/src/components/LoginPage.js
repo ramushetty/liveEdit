@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthProvider';
 
 import './LoginPage.css';
 
@@ -8,6 +9,7 @@ function LoginPage() {
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,9 +18,14 @@ function LoginPage() {
     try {
         const response = await axios.post('http://localhost:5000/api/user/login', { email, password });
         // Assuming the backend returns a success response
-        if (response.status === 200) {
-          // Redirect to the home page
+        if (response.status === 200&& response.data) {
+          const data = response.data
+          const email = data.email
+          localStorage.setItem('email',email)
+          console.log(email)
+          login();
           navigate('/home');
+          
         } else {
           // Handle errors or unsuccessful login attempts
           console.error('Login failed:', response);
@@ -34,8 +41,10 @@ function LoginPage() {
     navigate('/register');
 };
   return (
+    <div className='title'>
+    <h1 className="page-title m-5 " style={{fontSize:'50px'}}>Login</h1>
     <div className="login-container">
-        {/* <h2 className="page-title">Login</h2> */}
+         
       <form onSubmit={handleSubmit} className="login-form">
         <label>
           Email:
@@ -61,7 +70,10 @@ function LoginPage() {
         </button>
       </form>
     </div>
+    </div>
   );
 }
 
 export default LoginPage;
+
+
