@@ -21,7 +21,7 @@ exports.loginUser = async (req, res) => {
         const user = await userModel.findUserByEmail(req.body.email);
         if (user && await bcrypt.compare(req.body.password, user.password)) {
             const token = jwt.sign({ userId: user.id }, 'SECRET_KEY', { expiresIn: '1h' }); // Replace 'SECRET_KEY' with a real secret key
-            res.json({ token });
+            res.json({ token:token, email:user.email });
         } else {
             res.status(400).send('Invalid credentials');
         }
